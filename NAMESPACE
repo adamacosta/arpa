@@ -1,1 +1,4 @@
 exportPattern("^[[:alpha:]]+")
+#export(--insert functions to export--)
+#import(--insert packages to import--)
+#exportMethods(--insert methods to export--)
