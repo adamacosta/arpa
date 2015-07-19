@@ -1,0 +1,129 @@
+#include <R.h>
+#include <Rinternals.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include "ngram.h"
+
+/*
+ * C implementation of the read.arpa function. As written, this will not
+ * run on Windows, so someone will have to port it.
+ */
+SEXP readarpa(SEXP input, SEXP verbosearg, SEXP uskiparg, SEXP umaxarg, 
+              SEXP bskiparg, SEXP bmaxarg, SEXP tskiparg, SEXP tmaxarg) {
+	
+	SEXP ans;
+	Rboolean verbose;
+	int uskip;
+	int umax;
+	int bskip;
+	int bmax;
+	int tskip;
+	int tmax;
+
+	int fd;
+	size_t len;
+	void *pa;
+	void *eof;
+	struct stat sbuf;
+	const char *cur_ch;
+	const char *lst_ch;
+	int nlines;
+	int lst_idx;
+	int cur_idx;
+	int i;
+
+	/* Double-check input */
+	if (!isLogical(verbosearg)) error("verbose must be Boolean type");
+	if (!isInteger(uskiparg)) error("uskip must be Integer type");
+	if (!isInteger(umaxarg)) error("umax must be Integer type");
+	if (!isInteger(bskiparg)) error("bskip must be Integer type");
+	if (!isInteger(bmaxarg)) error("bmax must be Integer type");
+	if (!isInteger(tskiparg)) error("tskip must be Integer type");
+	if (!isInteger(tmaxarg)) error("tmax must be Integer type");
+
+	verbose = LOGICAL(verbosearg)[0];
+	uskip = INTEGER(uskiparg)[0];
+	umax = INTEGER(umaxarg)[0];
+	bskip = INTEGER(bskiparg)[0];
+	bmax = INTEGER(bmaxarg)[0];
+	tskip = INTEGER(tskiparg)[0];
+	tmax = INTEGER(tmaxarg)[0];
+	
+	int START = uskip;
+	int STOP = umax;
+	const char NEWLINE = '\n';
+	const char TAB = '\t';
+
+	/* Open and mmap file, checking to ensure everything works */
+	const char *filename = CHAR(input)[0];
+	fd = open(filename, O_RDONLY)
+	if (fd == -1) {
+		close(fd);
+		Rprintf("file not found: %s\n", filename);
+		exit(EXIT_FAILURE);
+	}
+
+	if (fstat(fd, &sbuf) == -1) {
+		close(fd);
+		Rprintf("couldn't get file size: %s\n", filename);
+		exit(EXIT_FAILURE);
+	}
+
+	len = sbuf.st_size;
+	if (len <= 0) {
+		close(fd);
+		Rprintf("file is empty: %s\n", filename);
+		exit(EXIT_FAILURE);
+	}
+
+	pa = mmap(NULL, len, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
+	if (EOF > -1) {
+		close(fd);
+		munmap(pa, len);
+		Rprintf("error: EOF is not -1\n");
+		exit(EXIT_FAILURE);
+	}
+	if (pa[len - 1] < 0) {
+		munmap(fd, len);
+		close(fd);
+		Rprintf("error: mmap'd region has EOF at the end\n");
+		exit(EXIT_FAILURE);
+	}
+	eof = pa + len;
+
+	/* Start read */
+	lst_idx = cur_idx = nlines = 0;
+	cur_ch = pa;
+
+	/* First, advance past skip */
+	while (nlines < START) {
+		lst_ch = cur_ch;
+		/* Test, then advance */
+		if (NEWLINE == cur_ch++) {
+			nlines++;
+		}
+	}
+	nlines = 0;
+
+	/* Now parse the file */
+	i = 0;
+	while (nlines < STOP && cur_ch < eof) {
+		if (cur_ch == NEWLINE) {
+			nlines++;
+		}
+		if (lst_ch == NEWLINE) {
+			/* NOT IMPLEMENTED */
+		} else if (lst_ch == TAB && cur_ch != '-') {
+			/* NOT IMPLEMENTED */
+		}
+		cur_ch++;
+	} 
+
+	munmap(fd, len);
+	close(fd);
+
+	return(ans);
+}
