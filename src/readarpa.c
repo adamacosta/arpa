@@ -59,7 +59,7 @@ SEXP readarpa(SEXP input, SEXP verbosearg, SEXP uskiparg, SEXP umaxarg,
 
 	/* Open and mmap file, checking to ensure everything works */
 	const char *filename = CHAR(input)[0];
-	fd = open(filename, O_RDONLY)
+	fd = open(filename, O_RDONLY);
 	if (fd == -1) {
 		close(fd);
 		Rprintf("file not found: %s\n", filename);
@@ -79,14 +79,14 @@ SEXP readarpa(SEXP input, SEXP verbosearg, SEXP uskiparg, SEXP umaxarg,
 		exit(EXIT_FAILURE);
 	}
 
-	pa = mmap(NULL, len, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
+	pa = (const char *)mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, 0);
 	if (EOF > -1) {
 		close(fd);
 		munmap(pa, len);
 		Rprintf("error: EOF is not -1\n");
 		exit(EXIT_FAILURE);
 	}
-	if (pa[len - 1] < 0) {
+	if (pa + len < 0) {
 		munmap(fd, len);
 		close(fd);
 		Rprintf("error: mmap'd region has EOF at the end\n");
