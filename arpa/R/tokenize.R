@@ -1,0 +1,41 @@
+#' Return cleaned version of input text
+#'
+#' @author Adam Acosta
+#' @param in_text : Unformatted character vector
+#' @return tokenizable character vectors
+clean_text <- function(in_text) {
+     # should remove strange characters - TEST, TEST, TEST!!!
+     new_text <- iconv(in_text, from = 'UTF-8', to = 'latin1', sub = ' ')
+     new_text <- stri_trans_tolower(new_text)
+     # remove numbers
+     new_text <- stri_subset_charclass(new_text,
+                                       pattern="[^0-9]",
+                                       omit_na=TRUE)
+     # remove everything that isn't a letter or apostrophe
+     new_text <- stri_subset_charclass(new_text,
+                                       pattern="[a-z']")
+     # squeeze whitespace
+     new_text <- stri_replace_all_regex(new_text,
+                                        pattern=" +",
+                                        replacement=" ")
+     # remove stray apostrophes - can used fixed because whitespace was squeezed
+     new_text <- stri_replace_all_fixed(new_text,
+                                        pattern=" ' ",
+                                        replacement=" ")
+     new_text <- stri_trim_both(new_text)
+     # TODO: Insert <UNK> etc model tokens?
+     # TODO: Profanity filter?
+     return(new_text)
+}
+
+#' Return vector of tokens from input text
+#'
+#' @author Adam Acosta
+#' @param in_text : Unformatted character vector
+#' @return words : A list of tokens parsed from the input
+tokenize <- function(in_text) {
+     # TODO: Check for NAs?
+     words <- unlist(stri_split_charclass(clean_text(in_text),
+                                          pattern="[^a-z']"))
+     return(words[words != ''])
+}
