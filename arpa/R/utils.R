@@ -12,10 +12,13 @@ parseFileR <- function(input, verbose, uskip, umax, bskip, bmax, tskip, tmax) {
      lines <- readLines(con)
      parseLine <- function(line) return(str_to_vec(line, '\t')[1:2])
      buildHash <- function(lines) {
-          # NOTE: The hash package uses pass-by-reference semantics, so
+          # NOTE: The hash package uses pass-by-reference semantics,
           # so this data.table continues to contain valid pointers to the
           # same objects stored in the hash. Make sure it is not exposed
           # or touched anywhere else
+          # Add: This may have been fixed by use of S4 class, since
+          # test of reference equality failed between slot and original
+          # hash table.
           tmp_dt <- t(as.data.frame(lapply(lines, parseLine)))
           return(hash(keys=as.character(tmp_dt[,2]),
                       values=as.numeric(tmp_dt[,1])))
