@@ -1,0 +1,40 @@
+
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(testthat)
+> library(arpa)
+Loading required package: hash
+hash-2.2.6 provided by Decision Patterns
+
+Loading required package: stringi
+> 
+> test_check("arpa")
+1. Error: read.arpa correctly parses sample file with just filename ------------
+file does not exist
+1: withCallingHandlers(eval(code, new_test_environment), error = capture_calls, message = function(c) invokeRestart("muffleMessage"), 
+       warning = function(c) invokeRestart("muffleWarning"))
+2: eval(code, new_test_environment)
+3: eval(expr, envir, enclos)
+4: read.arpa(filename) at test-readarpa.R:6
+5: stop("file does not exist")
+
+testthat results ================================================================
+OK: 14 SKIPPED: 0 FAILED: 1
+1. Error: read.arpa correctly parses sample file with just filename 
+
+Error: testthat unit tests failed
+Execution halted
