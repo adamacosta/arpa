@@ -27,32 +27,34 @@
 #' tables mapping each ngram to its log probability.
 #' @export
 #' @importFrom hash hash
-read.arpa <- function(input="", header=TRUE, unk.string='<unk>',
-                      start.string='<s>', stop.string='</s>', verbose=FALSE,
-                      nrow=-1L, skip=0L, ugrams=-1L, bgrams=-1L, tgrams=-1L) {
+#' @importFrom stringi stri_split_fixed
+read.arpa <- function(input="", header=TRUE, verbose=FALSE, nrow=-1L, skip=0L,
+                      ugrams=-1L, bgrams=-1L, tgrams=-1L) {
      if (!file.exists(input)) stop("file does not exist")
-     bad_format <- paste0("File not formatted properly. See ",
-                          "http://www.speech.sri.com/projects/",
-                          "srilm/manpages/ngram-format.5.html")
      debug.info(paste0("loading ", input))
+     con <- file(input)
      if (header) {
-          tmp <- readLines(con, (6 + skip))[(3 + skip):(5 + skip)]
-          # Sorry, this is ugly, but it reads the 3rd, 4th, and 5th line of the
-          # file and parses the number of unigrams, bigrams, and trigrams
-          head <- unlist(lapply(unlist(lapply(head, function(x) {
-                                                    strsplit(x, '=', fixed=TRUE)
-                                                    })), as.integer))
-          head <- na.omit(head)[1:3]
-          if (class(head) != "integer") stop(bad_format)
+          # Read lines 3 through 5 of form ngram N=Int, parsing each 'Int'
+          head <- unname(sapply(readLines(con, (skip + 5))[(skip+3):(skip+5)],
+                                function(x) {as.integer(str_to_vec(x, '=')[2])}))
+          if (class(head) != "integer") {
+               bad_format <- paste0("Header not formatted properly. See ",
+                                    "http://www.speech.sri.com/projects/",
+                                    "srilm/manpages/ngram-format.5.html")
+               stop(bad_format)
+          }
      }
      # Should be the 5-line header, 6 lines for the ngram delimiters, and
      # the number of total ngrams, plus any lines skipped
      if (nrow == -1L) {
+          if (!header) stop("must provide either nrow or have a header")
           nrow <- skip + 5 + 6 + sum(head)
           ugrams <- head[1]
           bgrams <- head[2]
           tgrams <- head[3]
      }
+     # TODO: Don't close connection when helper is moved
+     close(con)
      debug.info("found", ugrams, bgrams, tgrams)
      debug.info("      unigrams bigrams trigrams")
      uskip <- skip + 8
@@ -61,18 +63,9 @@ read.arpa <- function(input="", header=TRUE, unk.string='<unk>',
      bmax <- skip + 9 + ugrams + bgrams
      tskip <- skip + 11 + ugrams + bgrams
      tmax <- skip + 11 + ugrams + bgrams + tgrams
-     # Use low-level C i/o calls to parse the file
-     dyn.load('readarpa.so')
-     u <- .C('readarpa', as.character(input), as.integer(uskip),
-             as.integer(umax), up=numeric(ugrams), unis=character(ugrams))
-     b <- .C('readarpa', as.character(input), as.integer(bskip),
-             as.integer(bmax), bp=numeric(bgrams), bis=character(bgrams))
-     t <- .C('readarpa', as.character(input), as.integer(tskip),
-             as.integer(tmax), tp=numeric(tgrams), tris=character(tgrams))
-     dyn.unload('readarpa.so')
-     # Construct and return the ngram.model
-     ans <- list(unigrams=hash(keys=u[['unis']], values=u[['up']]),
-                 bigrams=hash(keys=b[['bis']], values=b[['bp']]),
-                 trigrams=hash(keys=t[['tris']], values=t[['tp']]))
-     return(ans)
+     # TODO: Use R to test small files while working on C code for faster
+     # more memory-efficient parsing
+     res <- parseFileR(input, verbose, uskip, umax, bskip, bmax, tskip, tmax)
+     #res <- parseFileC(input, verbose, uskip, umax, bskip, bmax, tskip, tmax)
+     return(res)
 }
