@@ -9,3 +9,5 @@ export(read.arpa)
 
 importFrom(hash, hash)
 importFrom(stringi, stri_replace_fixed)
+# Forgot this - can hopefully remove if portable C implementation can be done
+importFrom(data.table, as.data.table)
