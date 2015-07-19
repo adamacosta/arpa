@@ -55,7 +55,7 @@ read.arpa <- function(input="", header=TRUE, verbose=FALSE, nrow=-1L, skip=0L,
      close(con)
      if (verbose) cat(paste("found", ugrams, bgrams, tgrams, sep=' '))
      if (verbose) cat("      unigrams bigrams trigrams")
-     uskip <- skip + 8
+     uskip <- skip + 7
      umax <- skip + 7 + ugrams
      bskip <- skip + 9 + ugrams
      bmax <- skip + 9 + ugrams + bgrams
