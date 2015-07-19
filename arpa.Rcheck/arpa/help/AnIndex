@@ -1,7 +1,0 @@
-bigrams,ngram.model-method	bigrams-ngram.model-method
-contains,ngram.model,character-method	contains-ngram.model-character-method
-ngram.model	ngram.model-class
-ngram.model-class	ngram.model-class
-read.arpa	read.arpa
-trigrams,ngram.model-method	trigrams-ngram.model-method
-unigrams,ngram.model-method	unigrams-ngram.model-method
