@@ -1,4 +1,11 @@
-exportPattern("^[[:alpha:]]+")
-#export(--insert functions to export--)
-#import(--insert packages to import--)
-#exportMethods(--insert methods to export--)
+useDynLib(readarpa, .registration=TRUE)
+
+import(methods)
+exportClasses(ngram.model)
+
+export(read.arpa)
+
+# TODO: methods, other functions...
+
+importFrom(hash, hash)
+importFrom(stringi, stri_replace_fixed)
