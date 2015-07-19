@@ -38,6 +38,7 @@ read.arpa <- function(input="", header=TRUE, verbose=FALSE, nrow=-1L, skip=0L,
                bad_format <- paste0("Header not formatted properly. See ",
                                     "http://www.speech.sri.com/projects/",
                                     "srilm/manpages/ngram-format.5.html")
+               close(con)
                stop(bad_format)
           }
      }

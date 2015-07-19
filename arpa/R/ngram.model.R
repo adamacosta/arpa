@@ -51,7 +51,7 @@ check_ngram <- function(object) {
 #' @slot unigrams A hash table mapping unigrams to their log probability
 #' @slot bigrams A hash table mapping bigrams to their log probability
 #' @slot trigrams A hash table mapping trigrams to their log probability
-#' @exportClass
+#' @export
 ngram.model <- setClass("ngram.model",
          representation(unigrams="hash",
                         bigrams="hash",

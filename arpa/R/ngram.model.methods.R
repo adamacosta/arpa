@@ -1,11 +1,14 @@
+#' @export
 setGeneric('unigrams', function(object) {
      standardGeneric('unigrams')
 })
 
+#' @export
 setGeneric('bigrams', function(object) {
      standardGeneric('bigrams')
 })
 
+#' @export
 setGeneric('trigrams', function(object) {
      standardGeneric('trigrams')
 })
@@ -15,6 +18,7 @@ setGeneric('trigrams', function(object) {
 #' @author Adam Acosta
 #' @param object An ngram.model object
 #' @return unigrams The unigrams of the model
+#' @export
 setMethod('unigrams', signature(object='ngram.model'), function(object) {
      object@unigrams
 })
@@ -24,7 +28,7 @@ setMethod('unigrams', signature(object='ngram.model'), function(object) {
 #' @author Adam Acosta
 #' @param object An ngram.model object
 #' @return bigrams The bigrams of the model
-#' @exportMethod
+#' @export
 setMethod('bigrams', signature(object='ngram.model'), function(object) {
      object@bigrams
 })
@@ -34,7 +38,7 @@ setMethod('bigrams', signature(object='ngram.model'), function(object) {
 #' @author Adam Acosta
 #' @param object An ngram.model object
 #' @return trigrams The trigrams of the model
-#' @exportMethod
+#' @export
 setMethod('trigrams', signature(object='ngram.model'), function(object) {
      object@trigrams
 })
@@ -49,7 +53,7 @@ setGeneric('contains', function(object, key) {
 #' @param object An ngram.model object
 #' @param key A character string
 #' @return boolean Whether or not the string is in the language model
-#' @exportMethod
+#' @export
 setMethod('contains', signature(object='ngram.model', key='character'),
           function(object, key) {
                return(has.key(key, unigrams(object)) |
