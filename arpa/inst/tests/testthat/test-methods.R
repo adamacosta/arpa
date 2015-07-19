@@ -37,3 +37,9 @@ test_that('contains correctly finds an ngram in the model', {
 test_that('contains fails to find an ngram not in the model', {
      expect_false(contains(nm, 'i am not'))
 })
+
+test_that('prob return correct log probabilities', {
+     expect_equal(prob(nm, 'a bigram'), log(0.3))
+     expect_equal(prob(nm, 'so am i'), log(0.5))
+     expect_equal(prob(nm, 'a'), log(0.2))
+})
