@@ -12,11 +12,11 @@ model to their log probability, allowing for easy next-word prediction.
 \section{Slots}{
 
 \describe{
-\item{\code{unigrams}}{A hash table mapping unigrams to their log probability}
+\item{\code{unigrams}}{A data.table mapping unigrams to their log probability}
 
-\item{\code{bigrams}}{A hash table mapping bigrams to their log probability}
+\item{\code{bigrams}}{A data.table mapping bigrams to their log probability}
 
-\item{\code{trigrams}}{A hash table mapping trigrams to their log probability}
+\item{\code{trigrams}}{A data.table mapping trigrams to their log probability}
 }}
 \author{
 Adam Acosta
