@@ -9,5 +9,5 @@ Description: Parse language models read from ARPA files to R objects.
 Imports: data.table, stringi
 Suggests: testthat
 License: MIT
-URL: https://github.com/adamacosta/arpa/wiki
+URL: http://github.com/adamacosta/arpa/wiki
 LazyData: true

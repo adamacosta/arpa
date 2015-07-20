@@ -2,11 +2,22 @@
 % Please edit documentation in R/predict.next.R
 \name{predict.next}
 \alias{predict.next}
-\title{Generic for predict.next}
+\title{Word prediction engine}
 \usage{
 predict.next(object, text)
 }
+\arguments{
+\item{object}{ngram.model}
+
+\item{text}{character}
+}
+\value{
+The most likely next word in the sentence
+}
 \description{
-Generic for predict.next
+Receives input text and predicts what the next word will be.
+}
+\author{
+Adam Acosta
 }
 

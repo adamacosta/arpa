@@ -3,22 +3,11 @@
 \docType{methods}
 \name{predict.next,ngram.model,character-method}
 \alias{predict.next,ngram.model,character-method}
-\title{Word prediction engine}
+\title{inheritParams predict.next}
 \usage{
 \S4method{predict.next}{ngram.model,character}(object, text)
 }
-\arguments{
-\item{object}{ngram.model}
-
-\item{text}{character}
-}
-\value{
-next character
-}
 \description{
-Receives input text and predicts what the next word will be.
-}
-\author{
-Adam Acosta
+inheritParams predict.next
 }
 

@@ -1,0 +1,7 @@
+citHeader("To cite arpa in publications use:")
+
+citEntry(entry  = "Manual",
+         author = personList(as.person("Adam Acosta"),
+                             as.person("Sam Acosta")),
+          year  = "2015",
+           url  = "https://github.com/adamacosta/arpa/wiki")
