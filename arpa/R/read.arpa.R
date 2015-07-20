@@ -23,7 +23,6 @@
 #' @return An ngram.model object, stored internally as a list of three hash
 #' tables mapping each ngram to its log probability.
 #' @export
-#' @importFrom hash hash
 #' @importFrom stringi stri_split_fixed
 read.arpa <- function(input="", header=TRUE, verbose=FALSE, nrow=-1L, skip=0L,
                       ugrams=-1L, bgrams=-1L, tgrams=-1L) {

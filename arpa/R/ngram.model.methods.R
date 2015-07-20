@@ -57,9 +57,47 @@ setGeneric('contains', function(object, key) {
 #' @export
 setMethod('contains', signature(object='ngram.model', key='character'),
           function(object, key) {
-               return(has.key(key, unigrams(object)) |
-                      has.key(key, bigrams(object)) |
-                      has.key(key, trigrams(object)))
+               tokens <- tokenize(key)
+               len <- length(tokens)
+               if (len == 1) {
+                    u <- unigrams(object)
+                    return(tokens[1] %in% u$w1)
+               }
+               if (len == 2) {
+                    b <- bigrams(object)
+                    return(tokens[1] %in% b$w1 && tokens[2] %in% b$w2)
+               }
+               t <- trigrams(object)
+               return(tokens[1] %in% t$w1 && tokens[2] %in% t$w2 && tokens[3] %in% t$w3)
+          }
+)
+
+setGeneric('subset', function(object, key) {
+     standardGeneric('subset')
+})
+
+#' Return the subset of the language model contain the partial key
+#'
+#' @author Adam Acosta
+#' @param object An ngram.model object
+#' @param key A character string
+#' @return data.table The subset of the ngram.model containing key
+setMethod('subset', signature(object='ngram.model', key='character'),
+          function(object, key) {
+               # No check to ensure existence because this is not
+               # exported and should be checked prior to call
+               tokens <- tokenize(key)
+               len <- length(tokens)
+               if (len == 1) {
+                    u <- unigrams(object)
+                    return(u[u$w1==tokens[1]])
+               }
+               if (len == 2) {
+                    b <- bigrams(object)
+                    return(b[b$w1==tokens[1] & b$w2==tokens[2]])
+               }
+               t <- trigrams(object)
+               return(t[t$w1==tokens[1] & t$w2==tokens[2] & t$w3==tokens[3]])
           }
 )
 
@@ -78,9 +116,6 @@ setGeneric('prob', function(object, key) {
 setMethod('prob', signature(object='ngram.model', key='character'),
           function(object, key) {
                if (!contains(object, key)) stop('key not in ngram.model')
-               len <- length(str_to_vec(key, ' '))
-               if (len == 1) return(unigrams(object)[[key]])
-               if (len == 2) return(bigrams(object)[[key]])
-               if (len == 3) return(trigrams(object)[[key]])
+               return(subset(object, key)$logp)
           }
 )
