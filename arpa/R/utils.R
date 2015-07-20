@@ -6,30 +6,45 @@ str_to_vec <- function(string, char) {
      return(unlist(stri_split_fixed(string, char)))
 }
 
-# Helper called by read.arpa
+#' Helper called by read.arpa
+#' @importFrom data.table data.table
 parseFileR <- function(input, verbose, uskip, umax, bskip, bmax, tskip, tmax) {
      con <- file(input)
      lines <- readLines(con)
-     parseLine <- function(line) return(str_to_vec(line, '\t')[1:2])
-     buildHash <- function(lines) {
-          # NOTE: The hash package uses pass-by-reference semantics,
-          # so this data.table continues to contain valid pointers to the
-          # same objects stored in the hash. Make sure it is not exposed
-          # or touched anywhere else
-          # Add: This may have been fixed by use of S4 class, since
-          # test of reference equality failed between slot and original
-          # hash table.
-          tmp_dt <- t(as.data.frame(lapply(lines, parseLine)))
-          return(hash(keys=as.character(tmp_dt[,2]),
-                      values=as.numeric(tmp_dt[,1])))
+     close(con)
+     buildTable <- function(nwords, first, last, offset) {
+          nrow <- last - first + 1
+          if (nwords == 1) {
+               dt <- data.table(logp=numeric(nrow), w1=character(nrow))
+          } else if (nwords == 2) {
+               dt <- data.table(logp=numeric(nrow), w1=character(nrow),
+                                w2=character(nrow))
+          } else {
+               dt <- data.table(logp=numeric(nrow), w1=character(nrow),
+                                w2=character(nrow), w3=character(nrow))
+          }
+
+          parse_line <- function(line) {
+               strings <- str_to_vec(line, '\t')[1:2]
+               logp <- as.numeric(strings[1])
+               ngram <- tokenize(strings[2])
+               return(list(logp, ngram[1], ngram[2], ngram[3]))
+          }
+
+          set_row <- function(line_no) {
+               set(dt, line_no - offset, names(dt), parse_line(lines[line_no]))
+          }
+
+          lapply(first:last, set_row)
+
+          return(dt)
      }
      # TODO: R's copy semantics make this stupidly inefficient, using 2 gigs
      # to a parse a 300 MB file. Move to C.
      res <- new('ngram.model',
-                unigrams=buildHash(lines[(uskip+1):umax]),
-                bigrams=buildHash(lines[(bskip+1):bmax]),
-                trigrams=buildHash(lines[(tskip+1):tmax]))
-     close(con)
+                unigrams=buildTable(1, uskip + 1, umax, uskip),
+                bigrams=buildTable(2, bskip + 1, bmax, bskip),
+                trigrams=buildTable(3, tskip + 1, tmax, tskip))
      return(res)
 }
 
