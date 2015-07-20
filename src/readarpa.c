@@ -1,21 +1,30 @@
-#include <R.h>
-#include <Rinternals.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "ngram.h"
+//#include "ngram.h"
+
+int readarpa(char *input, int verbosearg, int uskiparg, int umaxarg,
+	int bskiparg, int bmaxarg, int tskiparg, int tmaxarg);
+
+int main()
+{
+	char * filename = "../arpa/extdata/sample.arpa";
+	readarpa(filename, 0, 7, 15, 17, 29, 31, 49);
+}
 
 /*
  * C implementation of the read.arpa function. As written, this will not
  * run on Windows, so someone will have to port it.
  */
-SEXP readarpa(SEXP input, SEXP verbosearg, SEXP uskiparg, SEXP umaxarg, 
-              SEXP bskiparg, SEXP bmaxarg, SEXP tskiparg, SEXP tmaxarg) {
+int readarpa(char *input, int verbosearg, int uskiparg, int umaxarg, 
+              int bskiparg, int bmaxarg, int tskiparg, int tmaxarg) 
+{
 	
-	SEXP ans;
-	Rboolean verbose;
+	int verbose;
 	int uskip;
 	int umax;
 	int bskip;
@@ -23,8 +32,9 @@ SEXP readarpa(SEXP input, SEXP verbosearg, SEXP uskiparg, SEXP umaxarg,
 	int tskip;
 	int tmax;
 
-	int fd;
+	FILE * fd;
 	size_t len;
+	size_t linesize = 0;
 	void *pa;
 	void *eof;
 	struct stat sbuf;
@@ -35,7 +45,7 @@ SEXP readarpa(SEXP input, SEXP verbosearg, SEXP uskiparg, SEXP umaxarg,
 	int cur_idx;
 	int i;
 
-	/* Double-check input */
+	/* Double-check input 
 	if (!isLogical(verbosearg)) error("verbose must be Boolean type");
 	if (!isInteger(uskiparg)) error("uskip must be Integer type");
 	if (!isInteger(umaxarg)) error("umax must be Integer type");
@@ -51,79 +61,95 @@ SEXP readarpa(SEXP input, SEXP verbosearg, SEXP uskiparg, SEXP umaxarg,
 	bmax = INTEGER(bmaxarg)[0];
 	tskip = INTEGER(tskiparg)[0];
 	tmax = INTEGER(tmaxarg)[0];
+	*/
+
+	verbose = verbosearg;
+	uskip = uskiparg;
+	umax = umaxarg;
+	bskip = bskiparg;
+	bmax = bmaxarg;
+	tskip = tskiparg;
+	tmax = tmaxarg;
 	
-	int START = uskip;
-	int STOP = umax;
+	/* Open file */
+	const char *filename = input;
+	fd = fopen(filename, "r");
+
+	int startline = uskip;
+	int stopline = umax;
 	const char NEWLINE = '\n';
 	const char TAB = '\t';
+	int j;
+	char word1[100];
+	char word2[100];
+	char word3[100];
+	char *line;
+	float log = 0.0;
 
-	/* Open and mmap file, checking to ensure everything works */
-	const char *filename = CHAR(input)[0];
-	fd = open(filename, O_RDONLY);
-	if (fd == -1) {
-		close(fd);
-		Rprintf("file not found: %s\n", filename);
-		exit(EXIT_FAILURE);
-	}
+	//printf("%d %d %d %d %d %d\n", uskip, umax, bskip, bmax, tskip, tmax);
 
-	if (fstat(fd, &sbuf) == -1) {
-		close(fd);
-		Rprintf("couldn't get file size: %s\n", filename);
-		exit(EXIT_FAILURE);
-	}
-
-	len = sbuf.st_size;
-	if (len <= 0) {
-		close(fd);
-		Rprintf("file is empty: %s\n", filename);
-		exit(EXIT_FAILURE);
-	}
-
-	pa = (const char *)mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, 0);
-	if (EOF > -1) {
-		close(fd);
-		munmap(pa, len);
-		Rprintf("error: EOF is not -1\n");
-		exit(EXIT_FAILURE);
-	}
-	if (pa + len < 0) {
-		munmap(fd, len);
-		close(fd);
-		Rprintf("error: mmap'd region has EOF at the end\n");
-		exit(EXIT_FAILURE);
-	}
-	eof = pa + len;
-
-	/* Start read */
-	lst_idx = cur_idx = nlines = 0;
-	cur_ch = pa;
-
-	/* First, advance past skip */
-	while (nlines < START) {
-		lst_ch = cur_ch;
-		/* Test, then advance */
-		if (NEWLINE == cur_ch++) {
-			nlines++;
-		}
-	}
 	nlines = 0;
+	for (j = 1; j <= 3; j++)
+	{
+		if (j == 1)
+		{
+			startline = uskip;
+			stopline = umax;
+		}
+		else if (j == 2)
+		{
+			startline = bskip;
+			stopline = bmax;
+		}
+		else if (j == 3)
+		{
+			startline = tskip;
+			stopline = tmax;
+		}
+		
+		//printf("j = %d, nlines = %d, startline = %d, stopline = %d\n", j, nlines, startline, stopline);
 
-	/* Now parse the file */
-	i = 0;
-	while (nlines < STOP && cur_ch < eof) {
-		if (cur_ch == NEWLINE) {
+		/* First, advance past skip */
+		while (nlines < startline)
+		{
 			nlines++;
+			getline(&line, &linesize, fd);
+			printf("skipping line %d\n", nlines);
+			
 		}
-		if (lst_ch == NEWLINE) {
-			/* NOT IMPLEMENTED */
-		} else if (lst_ch == TAB && cur_ch != '-') {
-			/* NOT IMPLEMENTED */
+
+		/* Now parse the file */
+		while (nlines < stopline)
+		{
+			nlines++;
+			getline(&line, &linesize, fd);
+			//printf("%d\t%d\n", j, nlines);
+			//printf("%s\n", line);
+
+			if (j == 1)
+			{	
+				sscanf(line, "%f\t%s", &log, word1);
+				printf("%f\t%s\n", log, word1);
+			}
+			else if (j == 2)
+			{
+				sscanf(line, "%f %s %s", &log, word1, word2);
+				printf( "%f\t%s\t%s\n", log, word1, word2);
+			}
+			else if (j == 3)
+			{
+				sscanf(line, "%f %s %s %s", &log, word1, word2, word3);
+				printf("%f\t%s\t%s\t%s\n", log, word1, word2, word3);
+			}
+			else
+			{
+				printf("What the fuckk\n");
+			}
 		}
-		cur_ch++;
-	} 
+		printf("Exiting while loop\n");
+	}
 
-	munmap(fd, len);
-	close(fd);
+	fclose(fd);
 
-	return(ans);
+	return(0);
 }
