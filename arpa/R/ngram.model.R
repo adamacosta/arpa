@@ -20,44 +20,27 @@
 # The quote marks are needed because the hash can contain spaces and '<' and '>'
 # Document this somewhere with some vignettes.
 
-check_ngram <- function(object) {
-     errors <- character()
-     check_keys <- function(keys) {
-          if (!is.character(keys)) {
-               msg <- paste('Keys are ', class(keys), '. Must be character.')
-               errors <- c(errors, msg)
-          }
-     }
-     check_vals <- function(vals) {
-          if (!is.numeric(vals)) {
-               msg <- paste('Values are ', class(vals), '. Must be numeric.')
-               errors <- c(errors, msg)
-          }
-     }
-     check_keys(keys(object@unigrams))
-     check_vals(values(object@unigrams))
-     check_keys(keys(object@bigrams))
-     check_vals(values(object@bigrams))
-     check_keys(keys(object@trigrams))
-     check_vals(values(object@trigrams))
-     if (length(errors) == 0) TRUE else errors
-}
-
 #' An S4 class to represent an ngram language model
 #'
 #' @author Adam Acosta
 #' @description Provides an efficient, fast way to map ngrams in a language
 #' model to their log probability, allowing for easy next-word prediction.
-#' @slot unigrams A hash table mapping unigrams to their log probability
-#' @slot bigrams A hash table mapping bigrams to their log probability
-#' @slot trigrams A hash table mapping trigrams to their log probability
+#' @slot unigrams A data.table mapping unigrams to their log probability
+#' @slot bigrams A data.table mapping bigrams to their log probability
+#' @slot trigrams A data.table mapping trigrams to their log probability
 #' @export
+#' @importFrom data.table data.table
 ngram.model <- setClass("ngram.model",
-         representation(unigrams="hash",
-                        bigrams="hash",
-                        trigrams="hash"),
-         prototype(unigrams=hash(keys=c('<s>'), values=c(-99)),
-                   bigrams=hash(keys=c('<s> </s>'), values=c(-99)),
-                   trigrams=hash(keys=c('<s> <unk> </s>'), values=c(-99))),
-         validity=check_ngram
+         representation(unigrams="data.table",
+                        bigrams="data.table",
+                        trigrams="data.table"),
+         prototype(unigrams=data.table(logp=numeric(0),
+                                       w1=character(0)),
+                   bigrams=data.table(logp=numeric(0),
+                                      w1=character(0),
+                                      w2=character(0)),
+                   trigrams=data.table(logp=numeric(0),
+                                       w1=character(0),
+                                       w2=character(0),
+                                       w3=character(0)))
 )
