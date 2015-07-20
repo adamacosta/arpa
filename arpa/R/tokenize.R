@@ -3,7 +3,6 @@
 #' @author Adam Acosta
 #' @param text Unformatted character vector
 #' @return tokenizable character vectors
-#' @importFrom stringi stri_trans_to_lower
 #' @importFrom stringi stri_subset_charclass
 #' @importFrom stringi stri_replace_all_regex
 #' @importFrom stringi stri_replace_all_fixed
@@ -11,7 +10,7 @@
 clean_text <- function(text) {
      # should remove strange characters - TEST, TEST, TEST!!!
      new_text <- iconv(text, from = 'UTF-8', to = 'latin1', sub = ' ')
-     new_text <- stri_trans_tolower(new_text)
+     new_text <- tolower(new_text)
      # remove numbers
      new_text <- stri_subset_charclass(new_text,
                                        pattern="[^0-9]",
@@ -38,7 +37,7 @@ clean_text <- function(text) {
 #' @author Adam Acosta
 #' @param text Unformatted character vector
 #' @return words A list of tokens parsed from the input
-#' @importFrom string stri_split_charclass
+#' @importFrom stringi stri_split_charclass
 tokenize <- function(text) {
      # TODO: Check for NAs?
      words <- unlist(stri_split_charclass(clean_text(text),

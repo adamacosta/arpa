@@ -8,6 +8,7 @@ str_to_vec <- function(string, char) {
 
 #' Helper called by read.arpa
 #' @importFrom data.table data.table
+#' @importFrom data.table set
 parseFileR <- function(input, verbose, uskip, umax, bskip, bmax, tskip, tmax) {
      con <- file(input)
      lines <- readLines(con)
