@@ -6,6 +6,11 @@ str_to_vec <- function(string, char) {
      return(unlist(stri_split_fixed(string, char)))
 }
 
+# dispatch function based on input length
+select.func <- function(..., args, funcs) {
+     return(funcs[[length(args)]](..., args))
+}
+
 #' Helper called by read.arpa
 #' @importFrom data.table data.table
 #' @importFrom data.table set
