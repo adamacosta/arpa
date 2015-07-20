@@ -10,5 +10,4 @@ Imports: data.table, stringi
 Suggests: testthat
 License: MIT
 URL: https://github.com/adamacosta/arpa/wiki
-Suggests: testthat
 LazyData: true
