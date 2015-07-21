@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+src
+src/*
+figure
+figure/*
+.gitignore
+Vagrantfile
+README.Rmd
+README.md
+.travis.yml
+^\.travis\.yml$

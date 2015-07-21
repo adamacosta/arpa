@@ -3,3 +3,5 @@
 .RData
 arpa.Rcheck/
 .vagrant/
+figure/
+README.Rmd
