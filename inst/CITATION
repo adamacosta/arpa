@@ -1,0 +1,13 @@
+citHeader("To cite arpa in publications use:")
+
+citEntry(entry  = "Manual",
+          title = "arpa: An R package for parsing language models ",
+                  "read from ARPA files.",
+         author = personList(as.person("Adam Acosta"),
+                             as.person("Sam Acosta")),
+          year  = "2015",
+           url  = "https://github.com/adamacosta/arpa/wiki",
+
+    textVersion = "Adam Acosta, Sam Acosta (2015).",
+                  "arpa: ",
+                  "An R package for parsing language models read from ARPA files.")
