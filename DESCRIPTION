@@ -1,0 +1,25 @@
+Package: arpa
+Title: Tools to parse ARPA files and build predictive text engines
+Version: 0.1
+Authors@R: as.person(c(
+     "Adam Acosta <adam.acosta@gatech.edu> [aut, cre]",
+     "Sam Acosta <samanthajacosta@gmail.com> [aut]"))
+Description: Parse language models read from ARPA files to R objects.
+URL: http://github.com/adamacosta/arpa/wiki
+BugReports: http://github.com/adamacosta/arpa/issues
+Imports:
+    data.table,
+    stringi,
+    methods
+Suggests:
+    testthat
+License: GPL-3
+LazyData: true
+Collate:
+    'arpa.R'
+    'class-ngram.model.R'
+    'ngram.model.methods.R'
+    'predict.R'
+    'read.arpa.R'
+    'tokenize.R'
+    'utils.R'
