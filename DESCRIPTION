@@ -1,9 +1,9 @@
 Package: arpa
-Title: Tools to parse ARPA files and build predictive text engines
+Title: Tools to Parse ARPA Files and Build Predictive Text Engines
 Version: 0.1
-Authors@R: as.person(c(
-     "Adam Acosta <adam.acosta@gatech.edu> [aut, cre]",
-     "Sam Acosta <samanthajacosta@gmail.com> [aut]"))
+Authors@R: c(
+     person("Acosta", "Adam", role=c("aut", "cre"), email="adam.acosta@gatech.edu"),
+     person("Acosta", "Sam", role="aut"))
 Description: Parse language models read from ARPA files to R objects.
 URL: http://github.com/adamacosta/arpa/wiki
 BugReports: http://github.com/adamacosta/arpa/issues
