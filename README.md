@@ -1,7 +1,5 @@
----
-title: "arpa"
-author: "Adam Acosta"
----
+arpa
+====
 
 
 
