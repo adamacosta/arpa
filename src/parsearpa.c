@@ -16,9 +16,9 @@ int main()
 	FILE *fd, *fp;
 	int nlines;
 	int i;
-	
+
 	/* Open and mmap file, checking to ensure everything works */
-	fd = fopen("../arpa/extdata/sample.arpa", "r");
+	fd = fopen("../inst/extdata/good.arpa", "r");
 	if (!fd)
 	{
 		printf("Couldn't open file.\n");
@@ -51,7 +51,7 @@ int main()
 	}
 
 	strcpy(stop_string, "\\2-grams:");
-	while ((read = getline(&line, &len, fp)) != -1) 
+	while ((read = getline(&line, &len, fp)) != -1)
 	{
 		sscanf(line, "%s", word1);
 		if (strcmp(word1, stop_string) == 0)
@@ -100,7 +100,7 @@ int readchunk(char *start_ch, char *chunk)
 	i = 0;
 	c = *ch;
 	while (c != '\t' && c != ' ' && c != '\n' )
-	{	
+	{
 		i++;
 		ch++;
 		c = *ch;
