@@ -24,7 +24,7 @@ setGeneric('predict', function(object, text) {
 #' @export
 setMethod('predict', signature(object='ngram.model', text='character'),
           function(object, text) {
-               if (text == '') predict.e(object)
+               if (text == '') predict.u(object, '<s>')
                tokens <- tokenize(text)
                len <- length(tokens)
                if (len < 3) {
@@ -34,15 +34,10 @@ setMethod('predict', signature(object='ngram.model', text='character'),
                                                   predict.t)))
                } else {
                     # We will only consider the last two words for now
-                    return(predict.b(object, tokens[(len - 2):len]))
+                    return(predict.b(object, tokens[(len - 1):len]))
                }
           }
 )
-
-# The empty case. Returns the most common word following a <s>
-predict.e <- function(object) {
-     return(predict.u(object, '<s>'))
-}
 
 # This is completely determined by the model probability of the bigram
 # in the case with only one preceding word.
