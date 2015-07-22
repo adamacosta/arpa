@@ -1,24 +1,12 @@
-# You can learn more about package authoring with RStudio at:
-#
-#   http://r-pkgs.had.co.nz/
-#
-# Some useful keyboard shortcuts for package authoring:
-#
-#   Build and Reload Package:  'Ctrl + Shift + B'
-#   Check Package:             'Ctrl + Shift + E'
-#   Test Package:              'Ctrl + Shift + T'
-
-# Class: arpa.lm
-# Contains: a list of three hash tables mapping unigrams, bigrams, and trigrams
-# in a language model to their log probability
-# Options: for memory efficiency but less speed, some other internal representation
-
-
-# TODO:
-# The hashes themselves have a 'hash_table$key' syntax, so this will require
-# the somewhat odd-looking model@unigrams$'unigram' syntax to access values.
-# The quote marks are needed because the hash can contain spaces and '<' and '>'
-# Document this somewhere with some vignettes.
+# TODO: Create a more efficient data structure
+# Can be done as follows:
+# key <- 'w1'
+# val1 <- c('w2'=log(p1))
+# h <- hash(keys=key, values=val1)
+# to add a bigram starting with 'w1':
+# h[['w1']] <- c(h[['w1']], 'w3'=log(p2))
+# to access:
+# return(h[['w1']][['w2']])
 
 #' An S4 class to represent an ngram language model
 #'
