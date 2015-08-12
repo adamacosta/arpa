@@ -24,17 +24,20 @@ setGeneric('predict', function(object, text) {
 #' @export
 setMethod('predict', signature(object='ngram.model', text='character'),
           function(object, text) {
-               if (text == '') predict.u(object, '<s>')
-               tokens <- tokenize(text)
-               len <- length(tokens)
-               if (len < 3) {
-                    return(select.func(object, args=tokens,
-                                       funcs=list(predict.u,
-                                                  predict.b,
-                                                  predict.t)))
+               if (text == '') {
+                    predict.u(object, '<s>')
                } else {
-                    # We will only consider the last two words for now
-                    return(predict.b(object, tokens[(len - 1):len]))
+                    tokens <- tokenize(text)
+                    len <- length(tokens)
+                    if (len < 3) {
+                         select.func(object, args=tokens,
+                                     funcs=list(predict.u,
+                                                predict.b,
+                                                predict.t))
+                    } else {
+                         # We will only consider the last two words for now
+                         predict.b(object, tokens[(len - 1):len])
+                    }
                }
           }
 )
@@ -45,14 +48,24 @@ predict.u <- function(object, text) {
      # TODO: Deal with oov words - use <unk> token
      # TODO: Return three most likely words
      b <- bigrams(object)
-     return(b[b$w1==text][order(logp, decreasing=TRUE)][1,]$w2)
+     ans <- b[b$w1==text][order(logp, decreasing=TRUE)][1:3,]$w2
+     if (NA %in% ans) {
+          predict.u(object, '<s>')
+     } else {
+          sub('</s>', '.', ans)
+     }
 }
 
 # Likewise, the case with two preceding words is completely determined
 # by the trigram probability
 predict.b <- function(object, text) {
      t <- trigrams(object)
-     return(t[t$w1==text[1] & t$w2==text[2]][order(logp, decreasing=TRUE)][1,]$w3)
+     ans <- t[t$w1==text[1] & t$w2==text[2]][order(logp, decreasing=TRUE)][1:3,]$w3
+     if (NA %in% ans) {
+          predict.u(object, '<s>')
+     } else {
+          sub('</s>', '.', ans)
+     }
 }
 
 # For now, only considering last words to allow efficient prediction by
