@@ -31,7 +31,7 @@ clean_text <- function(text) {
      new_text <- stri_trim_both(new_text)
      # TODO: Insert <UNK> etc model tokens?
      # TODO: Profanity filter?
-     return(new_text)
+     new_text
 }
 
 #' Return vector of tokens from input text
@@ -46,5 +46,5 @@ tokenize <- function(text) {
      # TODO: Check for NAs?
      words <- unlist(stri_split_charclass(clean_text(text),
                                           pattern="[^a-z']"))
-     return(words[words != ''])
+     words[words != '']
 }
