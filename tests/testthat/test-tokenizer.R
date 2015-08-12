@@ -6,7 +6,6 @@ in_text3 <- 'love a cat'
 in_text4 <- '              aa%nope ha ha'
 
 test_that('input is correctly tokenized', {
-     skip('broke on purpose')
      expect_equal(tokenize(in_text1), c('bla', 'bla', 'bla'))
      expect_equal(tokenize(in_text2), c('adfkl', 'jh'))
      expect_equal(tokenize(in_text3), c('love', 'a', 'cat'))

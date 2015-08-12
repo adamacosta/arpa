@@ -11,12 +11,12 @@ nm <- new('ngram.model',
           trigrams=t)
 
 test_that('predict.ngram correct predicts from one trailing word', {
-     skip('broke on purpose')
+     skip('Changed to three outputs')
      expect_equal(predict(nm, 'a'), 'bigram')
 })
 
 test_that('predict.ngram correctly predicts from two trailing words', {
-     skip('broke on purpose')
+     skip('Changed to three outputs')
      expect_equal(predict(nm, 'i am'), 'trigram')
 })
 

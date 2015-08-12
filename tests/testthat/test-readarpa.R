@@ -4,7 +4,6 @@ good <- system.file('extdata', 'good.arpa', package='arpa')
 bad <- system.file('extdata', 'bad.arpa', package='arpa')
 
 test_that('read.arpa correctly parses sample file with just filename', {
-     skip('broke on purpose')
      nm <- read.arpa(good)
      expect_is(nm, 'ngram.model')
      expect_true(contains(nm, 'i love you'))
@@ -13,13 +12,11 @@ test_that('read.arpa correctly parses sample file with just filename', {
 })
 
 test_that('read.arpa returns an error when header is malformed', {
-     skip('broke on purpose')
      expect_error(read.arpa(bad))
 })
 
 test_that('read.arpa correctly parses a sample file with parameters provided', {
      nm <- read.arpa(good, header=FALSE, nrow=42, ugrams=8, bgrams=12, tgrams=18)
-     skip('broke on purpose')
      expect_is(nm, 'ngram.model')
      expect_true(contains(nm, 'love a cat'))
      expect_false(contains(nm, 'sorry friend'))
