@@ -8,6 +8,7 @@
 \alias{ngram.model-class}
 \alias{prob,ngram.model,character-method}
 \alias{subset,ngram.model,character-method}
+\alias{tetragrams,ngram.model-method}
 \alias{trigrams,ngram.model-method}
 \alias{unigrams,ngram.model-method}
 \title{An S4 class to represent an ngram language model}
@@ -17,6 +18,8 @@
 \S4method{bigrams}{ngram.model}(object)
 
 \S4method{trigrams}{ngram.model}(object)
+
+\S4method{tetragrams}{ngram.model}(object)
 
 \S4method{contains}{ngram.model,character}(object, key)
 
@@ -41,6 +44,8 @@ model to their log probability, allowing for easy next-word prediction.
 
 \item \code{trigrams}: Return the trigram of a ngram.model
 
+\item \code{tetragrams}: Return the tetragrams of a ngram.model
+
 \item \code{contains}: Test whether or not a ngram.model contain an ngram
 
 \item \code{subset}: Return the subset of an ngram.model containing a partial key
@@ -57,6 +62,8 @@ model to their log probability, allowing for easy next-word prediction.
 \item{\code{trigrams}}{A data.table mapping trigrams to their log probability}
 }}
 \author{
+Adam Acosta
+
 Adam Acosta
 
 Adam Acosta

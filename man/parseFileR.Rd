@@ -4,7 +4,8 @@
 \alias{parseFileR}
 \title{Helper called by read.arpa}
 \usage{
-parseFileR(input, uskip, umax, bskip, bmax, tskip, tmax)
+parseFileR(input, uskip, umax, bskip, bmax, tskip, tmax, qskip, qmax,
+  small = TRUE)
 }
 \arguments{
 \item{input}{A filename}
