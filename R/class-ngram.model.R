@@ -25,7 +25,8 @@
 ngram.model <- setClass("ngram.model",
          representation(unigrams="data.table",
                         bigrams="data.table",
-                        trigrams="data.table"),
+                        trigrams="data.table",
+                        tetragrams="data.table"),
          prototype(unigrams=data.table(logp=numeric(0),
                                        w1=character(0)),
                    bigrams=data.table(logp=numeric(0),
@@ -34,5 +35,10 @@ ngram.model <- setClass("ngram.model",
                    trigrams=data.table(logp=numeric(0),
                                        w1=character(0),
                                        w2=character(0),
-                                       w3=character(0)))
+                                       w3=character(0)),
+                   tetragrams=data.table(logp=numeric(0),
+                                         w1=character(0),
+                                         w2=character(0),
+                                         w3=character(0),
+                                         w4=character(0)))
 )

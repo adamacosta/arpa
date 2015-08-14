@@ -40,6 +40,19 @@ setGeneric('trigrams', function(object) {
      standardGeneric('trigrams')
 })
 
+#' Return the tetragrams of a language model
+#'
+#' @author Adam Acosta
+#'
+#' @param object An ngram.model object
+#' @return tetragrams The tetragrams of the model
+#'
+#' @importFrom methods setGeneric
+#' @export
+setGeneric('tetragrams', function(object) {
+     standardGeneric('tetragrams')
+})
+
 #' @describeIn ngram.model
 #' Return the unigrams of a ngram.model
 #'
@@ -77,6 +90,19 @@ setMethod('bigrams', signature(object='ngram.model'), function(object) {
 #' @export
 setMethod('trigrams', signature(object='ngram.model'), function(object) {
      object@trigrams
+})
+
+#' @describeIn ngram.model
+#' Return the tetragrams of a ngram.model
+#'
+#' @author Adam Acosta
+#'
+#' @inheritParams tetragrams
+#'
+#' @importFrom methods setMethod
+#' @export
+setMethod('tetragrams', signature(object='ngram.model'), function(object) {
+     object@tetragrams
 })
 
 #' Tests whether or not a language model contains an ngram

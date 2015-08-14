@@ -3,12 +3,12 @@
 # strtovec
 str_to_vec <- function(string, char) {
      # simplifies the list semantics
-     return(unlist(stri_split_fixed(string, char)))
+     unlist(stri_split_fixed(string, char))
 }
 
 # dispatch function based on input length
 select.func <- function(..., args, funcs) {
-     return(funcs[[length(args)]](..., args))
+     funcs[[length(args)]](..., args)
 }
 
 #' Helper called by read.arpa
@@ -22,7 +22,8 @@ select.func <- function(..., args, funcs) {
 #'
 #' @importFrom data.table data.table
 #' @importFrom data.table set
-parseFileR <- function(input, uskip, umax, bskip, bmax, tskip, tmax) {
+parseFileR <- function(input, uskip, umax, bskip, bmax, tskip, tmax, qskip, qmax,
+                       small = TRUE) {
      con <- file(input)
      lines <- readLines(con)
      close(con)
@@ -33,16 +34,20 @@ parseFileR <- function(input, uskip, umax, bskip, bmax, tskip, tmax) {
           } else if (nwords == 2) {
                dt <- data.table(logp=numeric(nrow), w1=character(nrow),
                                 w2=character(nrow))
-          } else {
+          } else if (nwords == 3) {
                dt <- data.table(logp=numeric(nrow), w1=character(nrow),
                                 w2=character(nrow), w3=character(nrow))
+          } else {
+               dt <- data.table(logp=numeric(nrow), w1=character(nrow),
+                                w2=character(nrow), w3=character(nrow),
+                                w4=character(nrow))
           }
 
           parse_line <- function(line) {
                strings <- str_to_vec(line, '\t')[1:2]
                logp <- as.numeric(strings[1])
                ngram <- str_to_vec(strings[2], ' ')
-               return(list(logp, ngram[1], ngram[2], ngram[3]))
+               list(logp, ngram[1], ngram[2], ngram[3], ngram[4])
           }
 
           set_row <- function(line_no) {
@@ -52,15 +57,26 @@ parseFileR <- function(input, uskip, umax, bskip, bmax, tskip, tmax) {
           # TODO: Can this be parallelized?
           lapply(first:last, set_row)
 
-          return(dt)
+          dt
      }
      # TODO: R's copy semantics make this stupidly inefficient, using 2 gigs
      # to a parse a 300 MB file. Move to C.
-     res <- new('ngram.model',
-                unigrams=buildTable(1, uskip + 1, umax, uskip),
-                bigrams=buildTable(2, bskip + 1, bmax, bskip),
-                trigrams=buildTable(3, tskip + 1, tmax, tskip))
-     return(res)
+     if (small) {
+          res <- new('ngram.model',
+                     unigrams=data.table(logp=numeric(0),
+                                         w1=character(0)),
+                     bigrams=buildTable(2, bskip + 1, bmax, bskip),
+                     trigrams=buildTable(3, tskip + 1, tmax, tskip),
+                     tetragrams=buildTable(4, qskip + 1, qmax, qskip))
+          res
+     } else {
+          res <- new('ngram.model',
+                     unigrams=buildTable(1, uskip + 1, umax, uskip),
+                     bigrams=buildTable(2, bskip + 1, bmax, bskip),
+                     trigrams=buildTable(3, tskip + 1, tmax, tskip),
+                     tetragrams=buildTable(4, qskip + 1, qmax, qskip))
+          res
+     }
 }
 
 # NOT IMPLEMENTED
