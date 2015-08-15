@@ -4,8 +4,7 @@
 \alias{read.arpa}
 \title{Read ARPA file}
 \usage{
-read.arpa(input = "", header = TRUE, verbose = FALSE, nrow = -1L,
-  skip = 0L, ugrams = -1L, bgrams = -1L, tgrams = -1L, qgrams = -1L)
+read.arpa(inFile)
 }
 \arguments{
 \item{input}{A filename}

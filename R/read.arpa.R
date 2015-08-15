@@ -26,47 +26,63 @@
 #'
 #' @export
 #' @importFrom stringi stri_split_fixed
-read.arpa <- function(input="", header=TRUE, verbose=FALSE, nrow=-1L, skip=0L,
-                      ugrams=-1L, bgrams=-1L, tgrams=-1L, qgrams=-1L) {
-     if (!file.exists(input)) stop("file does not exist")
-     if (verbose) cat((paste0("loading ", input)))
-     con <- file(input)
-     if (header) {
-          # Read lines 3 through 6 of form ngram N=Int, parsing each 'Int'
-          head <- unname(sapply(readLines(con, (skip+6))[(skip+3):(skip+6)],
-                                function(x) {as.integer(str_to_vec(x, '=')[2])}))
-          if (class(head) != "integer") {
-               bad_format <- paste0("Header not formatted properly. See ",
-                                    "http://www.speech.sri.com/projects/",
-                                    "srilm/manpages/ngram-format.5.html")
-               close(con)
-               stop(bad_format)
-          }
-     }
-     # Should be the 6-line header, 8 lines for the ngram delimiters, and
-     # the number of total ngrams, plus any lines skipped
-     if (nrow == -1L) {
-          if (!header) stop("must provide either nrow or have a header")
-          nrow <- skip + 6 + 8 + sum(head)
-          ugrams <- head[1]
-          bgrams <- head[2]
-          tgrams <- head[3]
-          qgrams <- head[4]
-     }
-     # TODO: Don't close connection when helper is moved
-     close(con)
-     if (verbose) cat(paste("found", ugrams, bgrams, tgrams, qgrams, sep=' '))
-     if (verbose) cat("      unigrams bigrams trigrams tetragrams")
-     uskip <- skip + 8
-     umax <- skip + 8 + ugrams
-     bskip <- skip + 10 + ugrams
-     bmax <- skip + 10 + ugrams + bgrams
-     tskip <- skip + 12 + ugrams + bgrams
-     tmax <- skip + 12 + ugrams + bgrams + tgrams
-     qskip <- skip + 14 + ugrams + bgrams + tgrams
-     qmax <- skip + 14 + ugrams + bgrams + tgrams + qgrams
-     # TODO: Use R to test small files while working on C code for faster
-     # more memory-efficient parsing
-     parseFileR(input, uskip, umax, bskip, bmax, tskip, tmax, qskip, qmax)
-     #parseFileC(input, verbose, uskip, umax, bskip, bmax, tskip, tmax)
+#' @importFrom data.table fread
+#' @importFrom data.table setnames
+read.arpa <- function(inFile) {
+
+    parseHeader <- function(inFile) {
+        parseNum <- function(line) {
+            as.integer(unlist(stri_split_fixed(line, '='))[-1])
+        }
+        con <- file(inFile)
+        head <- readLines(con, 7)[3:6]
+        close(con)
+        vapply(head, parseNum, 0L)
+    }
+
+    ngram <- parseHeader(inFile)
+    ustart <- 9
+    uend <- ustart + ngram[1] - 1
+    bstart <- uend + 2
+    bend <- bstart + ngram[2] - 1
+    tstart <- bend + 2
+    tend <- tstart + ngram[3] - 1
+    qstart <- tend + 2
+    qend <- qstart + ngram[4] - 1
+
+    system(paste('sed', '-n',
+                 paste0(as.character(bstart + 1), ',', as.character(bend), 'p'),
+                 '<', inFile, '|',
+                 'tr', "\'\t\'", "\' \'", '|',
+                 'sed', 's/-0\\.[0-9]*$//g', '>', 'bi.tmp'))
+
+    bi_dt <- fread('bi.tmp', header = FALSE)
+    setnames(bi_dt, c('logp', 'w1', 'w2'))
+    system('rm -f bi.tmp')
+
+    system(paste('sed', '-n',
+                 paste0(as.character(tstart + 1), ',', as.character(tend), 'p'),
+                 '<', inFile, '|',
+                 'tr', "\'\t\'", "\' \'", '|',
+                 'sed', 's/-0\\.[0-9]*$//g', '>', 'tri.tmp'))
+
+    tri_dt <- fread('tri.tmp', header = FALSE)
+    setnames(tri_dt, c('logp', 'w1', 'w2', 'w3'))
+    system('rm -f tri.tmp')
+
+    system(paste('sed', '-n',
+                 paste0(as.character(qstart + 1), ',', as.character(qend), 'p'),
+                 '<', inFile, '|',
+                 'tr', "\'\t\'", "\' \'", '|',
+                 'sed', 's/-0\\.[0-9]*$//g', '>', 'tet.tmp'))
+
+    tet_dt <- fread('tet.tmp', header = FALSE)
+    setnames(tet_dt, c('logp', 'w1', 'w2', 'w3', 'w4'))
+    system('rm -f tet.tmp')
+
+    new('ngram.model',
+        unigrams = data.table(logp = numeric(0), w1 = character(0)),
+        bigrams = bi_dt,
+        trigrams = tri_dt,
+        tetragrams = tet_dt)
 }
